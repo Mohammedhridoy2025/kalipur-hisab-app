@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Function to check if user is authenticated (Admin)
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Members Collection: Everyone can read, Only Admin can write
+    match /members/{memberId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Subscriptions Collection: Everyone can read, Only Admin can write
+    match /subscriptions/{subscriptionId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Expenses Collection: Everyone can read, Only Admin can write
+    match /expenses/{expenseId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Trash/Recycle Bin: Everyone can read, Only Admin can write
+    match /trash/{trashId} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+
+    // Catch-all rule for any other collections
+    match /{document=**} {
+      allow read: if true;
+      allow write: if isAuthenticated();
+    }
+  }
+}
