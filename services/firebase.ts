@@ -1,15 +1,8 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Using the provided Firebase configuration directly to ensure the app works immediately
 const firebaseConfig = {
   apiKey: "AIzaSyADFLsO7piWILFCacpctgqWDfQrzNhXmAQ",
   authDomain: "ai-agent-455520.firebaseapp.com",
@@ -20,17 +13,13 @@ const firebaseConfig = {
   measurementId: "G-ETZLYRFBK0"
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
 // Function to create a mock Auth service to prevent "is not a function" errors
 const createMockAuth = () => {
   return {
     onAuthStateChanged: (callback: any) => {
       console.warn("Firebase Auth is using a mock service. Please verify initialization.");
       callback(null);
-      return () => { };
+      return () => {};
     },
     signInWithEmailAndPassword: async () => {
       throw new Error("Firebase Auth is not correctly initialized.");
@@ -46,23 +35,23 @@ const createMockDb = () => {
   const mockCollection = {
     onSnapshot: (callback: any) => {
       callback({ docs: [], docChanges: () => [] });
-      return () => { };
+      return () => {};
     },
     add: async () => { throw new Error("Firestore not initialized"); },
     doc: () => ({
       set: async () => { throw new Error("Firestore not initialized"); },
       delete: async () => { throw new Error("Firestore not initialized"); },
-      onSnapshot: () => () => { }
+      onSnapshot: () => () => {}
     }),
-    where: function () { return this; },
-    orderBy: function () { return this; },
-    limit: function () { return this; }
+    where: function() { return this; },
+    orderBy: function() { return this; },
+    limit: function() { return this; }
   };
 
   return {
     collection: () => mockCollection,
-    settings: () => { },
-    enablePersistence: async () => { }
+    settings: () => {},
+    enablePersistence: async () => {}
   } as unknown as firebase.firestore.Firestore;
 };
 
@@ -76,13 +65,13 @@ try {
   }
   dbInstance = firebase.firestore();
   authInstance = firebase.auth();
-
+  
   // Apply best-practice settings
   dbInstance.settings({
     cacheSizeBytes: firebase.firestore.CACHE_SIZE_UNLIMITED,
     merge: true
   });
-
+  
   // Enable offline persistence if possible
   if (typeof window !== 'undefined') {
     dbInstance.enablePersistence({ synchronizeTabs: true }).catch((err) => {
