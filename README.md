@@ -57,7 +57,7 @@
 
 ১. **ডাউনলোড বা ক্লোন করুন**:
    ```bash
-   git clone https://github.com/YourUsername/kalipur-pahara-hisab.git
+   git clone https://github.com/Mohammedhridoy2025/kalipur-hisab-app.git
    cd kalipur-pahara-hisab
    ```
 
@@ -135,7 +135,7 @@
 ডাটা এন্ট্রি বা এডিট করার জন্য অ্যাডমিন হিসেবে লগইন করতে হবে।
 
 - **Username**: `admin`
-- **Password**: `Bangla@123`
+- **Password**: `Bangla`
 
 *(আপনি চাইলে অ্যাপের কোড থেকে এই পাসওয়ার্ড পরিবর্তন করে নিতে পারেন)*
 
