@@ -337,9 +337,9 @@ const App: React.FC = () => {
             <button
               key={item.id}
               onClick={() => handleViewChange(item.id as ViewState)}
-              className={`flex flex-col items-center justify-center flex-1 transition-all py-1 ${isActive ? 'text-emerald-600' : 'text-slate-400'}`}
+              className={`flex flex-col items-center justify-center flex-1 transition-all py-1 ${isActive ? 'text-emerald-700' : 'text-slate-400'}`}
             >
-              <div className={`p-2 rounded-2xl transition-all ${isActive ? 'bg-emerald-50 scale-110' : 'hover:bg-gray-50'}`}>
+              <div className={`p-2 rounded-2xl transition-all ${isActive ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200 scale-120' : 'hover:bg-gray-50'}`}>
                 {item.icon}
               </div>
               <span className={`text-[10px] font-black mt-1.5 ${isActive ? 'opacity-100 translate-y-0' : 'opacity-80'}`}>{item.label}</span>

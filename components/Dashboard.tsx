@@ -1,9 +1,8 @@
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Member, Subscription, Expense, ViewState } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
-import { TrendingUp, TrendingDown, Users, PlusCircle, Wallet, History, ShoppingBag, ArrowUpRight, ArrowDownRight, ShieldCheck, Sparkles, Loader2, Quote } from 'lucide-react';
-import { getFinancialInsights } from '../services/geminiService';
+import { TrendingUp, TrendingDown, Users, PlusCircle, Wallet, History, ShoppingBag, ArrowUpRight, ArrowDownRight, ShieldCheck } from 'lucide-react';
 
 interface DashboardProps {
   members: Member[];
@@ -14,27 +13,9 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ members, subscriptions, expenses, onAction, isAdmin }) => {
-  const [aiInsight, setAiInsight] = useState<string>('');
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const overviewMonth = useMemo(() => new Date().toISOString().slice(0, 7), []);
-
   const totalCollections = subscriptions.reduce((sum, sub) => sum + sub.amount, 0);
   const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
   const balance = totalCollections - totalExpenses;
-
-  // Fetch AI Insights once on load
-  useEffect(() => {
-    const fetchInsight = async () => {
-      if (members.length > 0) {
-        setIsAiLoading(true);
-        const recentExps = expenses.slice(0, 5).map(e => ({ d: e.description, a: e.amount }));
-        const insight = await getFinancialInsights(members.length, balance, recentExps);
-        setAiInsight(insight);
-        setIsAiLoading(false);
-      }
-    };
-    fetchInsight();
-  }, [members.length, balance, expenses.length]);
 
   const chartData = useMemo(() => {
     const months = Array.from({ length: 6 }, (_, i) => {
@@ -68,66 +49,30 @@ const Dashboard: React.FC<DashboardProps> = ({ members, subscriptions, expenses,
 
   return (
     <div className="space-y-6 md:space-y-8 pb-10">
-      {/* Welcome & AI Insight Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-6 md:p-10 rounded-[3rem] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden group">
-           <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full -translate-y-32 translate-x-32 blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
-           <div className="flex items-center gap-6 relative z-10">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-emerald-600 rounded-[1.8rem] flex items-center justify-center text-white shadow-2xl shadow-emerald-200">
-                <ShieldCheck size={40} />
-              </div>
-              <div>
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">কালিপুর পাহারাদার<br/>ম্যানেজমেন্ট</h2>
-                <p className="text-slate-400 font-bold text-xs md:text-sm mt-2 flex items-center gap-2">
-                  <PlusCircle size={14} className="text-emerald-500" /> বর্তমান তহবিলের আপডেট সামারি
-                </p>
-              </div>
-           </div>
-           {isAdmin && (
-             <div className="flex gap-4 w-full md:w-auto relative z-10">
-               <button onClick={() => onAction('collections')} className="flex-1 md:flex-none px-8 py-4 bg-slate-900 text-white rounded-[1.4rem] font-black text-xs flex items-center justify-center gap-2 shadow-xl hover:bg-emerald-600 transition-all">
-                 <TrendingUp size={18} /> আদায়
-               </button>
-               <button onClick={() => onAction('expenses', 'add-expense')} className="flex-1 md:flex-none px-8 py-4 bg-rose-600 text-white rounded-[1.4rem] font-black text-xs flex items-center justify-center gap-2 shadow-xl hover:bg-rose-700 transition-all">
-                 <ShoppingBag size={18} /> খরচ
-               </button>
-             </div>
-           )}
-        </div>
-
-        {/* AI Financial Advisor Insight Card */}
-        <div className="bg-gradient-to-br from-indigo-600 to-blue-800 p-8 rounded-[3rem] text-white shadow-2xl shadow-indigo-100 relative overflow-hidden group">
-            <div className="absolute -top-4 -right-4 w-24 h-24 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000"></div>
-            <div className="relative z-10 h-full flex flex-col">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center">
-                   <Sparkles size={20} className="text-amber-300" />
-                </div>
-                <h4 className="font-black text-sm uppercase tracking-widest">স্মার্ট AI পরামর্শ</h4>
-              </div>
-              <div className="flex-1">
-                {isAiLoading ? (
-                  <div className="flex flex-col items-center justify-center h-24 gap-3">
-                     <Loader2 className="animate-spin" />
-                     <p className="text-[10px] font-black uppercase opacity-60">AI বিশ্লেষণ করছে...</p>
-                  </div>
-                ) : (
-                  <div className="relative">
-                    <Quote size={16} className="absolute -top-1 -left-1 opacity-20" />
-                    <p className="text-[13px] leading-relaxed font-bold italic px-4 line-clamp-4">
-                      {aiInsight || "তথ্য লোড করার পর এখানে আপনার তহবিলের জন্য গুরুত্বপূর্ণ পরামর্শ দেখা যাবে।"}
-                    </p>
-                  </div>
-                )}
-              </div>
-              <div className="mt-4 pt-4 border-t border-white/10 flex justify-between items-center">
-                 <span className="text-[9px] font-black uppercase tracking-widest opacity-60">Powered by Gemini AI</span>
-                 <button onClick={() => window.location.reload()} className="p-1.5 hover:bg-white/10 rounded-lg transition-colors">
-                    <History size={14} />
-                 </button>
-              </div>
+      {/* Welcome Banner */}
+      <div className="bg-white p-6 md:p-10 rounded-[3rem] shadow-sm border border-gray-100 flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden group">
+         <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-50 rounded-full -translate-y-32 translate-x-32 blur-3xl group-hover:scale-110 transition-transform duration-1000"></div>
+         <div className="flex items-center gap-6 relative z-10">
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-emerald-600 rounded-[1.8rem] flex items-center justify-center text-white shadow-2xl shadow-emerald-200">
+              <ShieldCheck size={40} />
             </div>
-        </div>
+            <div>
+              <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-tight">কালিপুর পাহারাদার<br/>ম্যানেজমেন্ট</h2>
+              <p className="text-slate-400 font-bold text-xs md:text-sm mt-2 flex items-center gap-2">
+                <PlusCircle size={14} className="text-emerald-500" /> বর্তমান তহবিলের আপডেট সামারি
+              </p>
+            </div>
+         </div>
+         {isAdmin && (
+           <div className="flex gap-4 w-full md:w-auto relative z-10">
+             <button onClick={() => onAction('collections')} className="flex-1 md:flex-none px-8 py-4 bg-slate-900 text-white rounded-[1.4rem] font-black text-xs flex items-center justify-center gap-2 shadow-xl hover:bg-emerald-600 transition-all">
+               <TrendingUp size={18} /> আদায়
+             </button>
+             <button onClick={() => onAction('expenses', 'add-expense')} className="flex-1 md:flex-none px-8 py-4 bg-rose-600 text-white rounded-[1.4rem] font-black text-xs flex items-center justify-center gap-2 shadow-xl hover:bg-rose-700 transition-all">
+               <ShoppingBag size={18} /> খরচ
+             </button>
+           </div>
+         )}
       </div>
 
       {/* Stats Grid */}
