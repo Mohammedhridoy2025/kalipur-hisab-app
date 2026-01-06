@@ -15,7 +15,7 @@ interface MemberManagerProps {
 }
 
 const DEFAULT_PHOTO = "https://png.pngtree.com/png-vector/20231019/ourmid/pngtree-user-profile-avatar-png-image_10211467.png";
-const IMGBB_API_KEY = "29d33f4e87a0b164eef70040cc4b955a";
+const IMGBB_API_KEY = process.env.IMGBB_API_KEY; // Updated to use process.env
 const COUNTRY_OPTIONS = [
   "বাংলাদেশ", "সৌদি আরব", "সংযুক্ত আরব আমিরাত", "ওমান", "মালয়েশিয়া", "কাতার", "কুয়েত", "সিঙ্গাপুর",
   "যুক্তরাজ্য", "ইতালি", "পর্তুগাল", "ফ্রান্স", "যুক্তরাষ্ট্র", "অস্ট্রেলিয়া", "অন্যান্য"
@@ -86,6 +86,11 @@ const MemberManager: React.FC<MemberManagerProps> = ({ members, subscriptions, i
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    if (!IMGBB_API_KEY) {
+      alert("ছবি আপলোডের জন্য API Key পাওয়া যায়নি। ডেভেলপারের সাথে যোগাযোগ করুন।");
+      return;
+    }
 
     if (file.size > 5 * 1024 * 1024) {
       alert("ছবির সাইজ অনেক বড়! ৫ MB এর নিচের ছবি দিন।");

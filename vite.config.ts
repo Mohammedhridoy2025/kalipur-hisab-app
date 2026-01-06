@@ -10,8 +10,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [react()],
     define: {
-      // Safely expose API_KEY from Vercel/environment to the client
+      // Safely expose API_KEY and IMGBB_API_KEY from Vercel/environment to the client
       'process.env.API_KEY': JSON.stringify(env.API_KEY),
+      'process.env.IMGBB_API_KEY': JSON.stringify(env.IMGBB_API_KEY), // Added IMGBB_API_KEY
     },
     build: {
       outDir: 'dist',
